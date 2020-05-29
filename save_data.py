@@ -55,9 +55,9 @@ arr6am = np.array([
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0],
 
 ])
-start4am = np.array([1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+start4am = np.array([0.8, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 start3am = np.array([0.7, 0.2, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-start6am = np.array([0.7, 0.2, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+start6am = np.array([0.6, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
 
 def get_mfcc(file_path):
@@ -94,8 +94,10 @@ def clustering(X, n_clusters=10):
 
 if __name__ == "__main__":
     # class_names = ["one", "two", "test_one", "test_two"]
-    # class_names = [ "benh_nhan","test_benh_nhan"]
-    class_names = ["hoac","benh_nhan", "nao", "noi", "dich", "test_nao", "test_hoac", "test_noi", "test_dich","test_benh_nhan"]
+    # class_names = [ "dich","test_thuam","test_dich",]
+    class_names = ["hoac","benh_nhan", "nao", "noi", "dich", "test_nao", "test_hoac", "test_noi", "test_dich","test_benh_nhan","test_thuam"]
+
+    # class_names = ["hoac","benh_nhan", "nao", "noi", "dich", "test_nao", "test_hoac", "test_noi", "test_dich","test_benh_nhan"]
     # class_names = ["nao", "noi", "test_nao", "test_noi", "dich", "test_dich",'hoac','test_hoac']
     dataset = {}
     for cname in class_names:
@@ -117,7 +119,7 @@ if __name__ == "__main__":
         # O^r = (c1, c2, ... ct, ... cT)
         # O^r size T x 1
         dataset[cname] = list([kmeans.predict(v).reshape(-1, 1) for v in dataset[cname]])
-        if cname == 'hoac':
+        if cname == 'hoac' or cname == 'dich':
 
             hmm = hmmlearn.hmm.MultinomialHMM(
                 n_components=12, random_state=0, n_iter=1000, verbose=True,
@@ -153,9 +155,9 @@ if __name__ == "__main__":
 
     print("Testing")
     for true_cname in class_names:
-        if true_cname[:4] != 'test':
-            continue
+        # if true_cname[:4] != 'test':
+        #     continue
 
-        for idx, O in enumerate(dataset[true_cname]):
+        for O in dataset[true_cname]:
             score = {cname: model.score(O, [len(O)]) for cname, model in models.items() if cname[:4] != 'test'}
-            print(true_cname, score, idx)
+            print(true_cname, score)
